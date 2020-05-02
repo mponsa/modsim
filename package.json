@@ -1,0 +1,16 @@
+{
+  "name": "modsim",
+  "version": "1.0.0",
+  "description": "Viz for ODE",
+  "main": "index.js",
+  "repository": "git@github.com:mponsa/modsim.git",
+  "author": "mponsa <manuponsa@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^0.12.3",
+    "jquery": "^3.5.0",
+    "jsxgraph": "^1.0.0",
+    "math": "^0.0.3",
+    "mathjax": "^3.0.1"
+  }
+}
