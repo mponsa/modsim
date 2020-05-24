@@ -44,7 +44,7 @@ function drawCard(method, args){
     elem.append(`<div class="card-footer" id="card-footer-${method}"></div>`);
     appendInputs($(`#formula-box-${method}`),args);
     appendGraph($(`#graph-container-${method}`),args)
-    appendCleanButton($(`#card-footer-${method}`),args)
+    appendFooter($(`#card-footer-${method}`))
 }
 
 function getCardTitle(method){
@@ -95,10 +95,18 @@ function appendButton(elem,args){
 
 function interpretFunction(){
     const expr = $('#equation-input').val();
-    odeEuler(expr,0,0,0.25,1);
+    const step = $('#step').val();
+    console.log(step);
+    switch(method){
+        case "euler": return odeEuler(expr,0,0,0.25,1);;
+        case "enhanced-euler": return odeEulerImproved(expr,0,0,0.25,1);
+        case "runge-kutta": return odeRungeKutta(expr,0,0,0.25,1);
+    }
+    
 }
 
 function odeEuler(f,x0,t0,h,limit){
+    console.log("computing ... Euler method ");
     tRange = generatePointArray(t0,limit,h);
     xRange = getZeroArray(tRange);
 
@@ -115,12 +123,33 @@ function odeEuler(f,x0,t0,h,limit){
 }
 
 function odeEulerImproved(f,x0,t0,h,limit){
+    console.log("computing ... Euler method Improved ");
     tRange = generatePointArray(t0,limit,h);
-    xRange = generatePointArray(t0,limit,h);
+    xRange = getZeroArray(generatePointArray(t0,limit,h));
 
     for(let i = 0; i < xRange.length - 1; i++){
-        //console.log(math.evaluate(f,{x:xRange[i],t:tRange[i]}));
-        xRange[i + 1] = xRange[i] + math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
+        xPred = xRange[i] + math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
+        xRange[i + 1] = xRange[i] + (math.evaluate(f,{x:xRange[i],t:tRange[i]})+math.evaluate(f,{xPred,t:tRange[i+1]}))*(h/2);
+    }
+
+    pointList = getPointList(tRange,xRange);
+
+    console.log(pointList);
+
+    var g = board.create('curve',[tRange,xRange],{dash:2});
+}
+
+function odeRungeKutta(f,x0,t0,h,limit){
+    console.log("computing ... Runge Kutta method");
+    tRange = generatePointArray(t0,limit,h);
+    xRange = getZeroArray(generatePointArray(t0,limit,h));
+
+    for(let i = 0; i < xRange.length - 1; i++){
+        gamma1 = math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
+        gamma2 = math.evaluate(f,{x:xRange[i]+0.5*gamma1,t:tRange[i]+0.5*h});
+        gamma3 = math.evaluate(f,{x:xRange[i]+0.5*gamma2,t:tRange[i]+0.5*h});
+        gamma4 = math.evaluate(f,{x:xRange[i]+gamma3,t:tRange[i]+ h});
+        xRange[i + 1] = xRange[i] + gamma1/6 + gamma2/3 + gamma3/3 + gamma4/6;
     }
 
     pointList = getPointList(tRange,xRange);
@@ -184,11 +213,30 @@ function appendGraph(elem,args){
     window.onresize = resize;
 }
 
+function appendFooter(elem,args){
+    appendOriginalFuncInput(elem,args);
+    appendResolveOriginalFunction(elem,args);
+    appendCleanButton(elem,args);
+}
+
 function appendCleanButton(elem,args){
     elem.append('<div class="resolve" id="clear">Limpiar</div>')
     $('#clear').click(function(){
         cleanMethodBody();
         //Appends the method view if changed.
         drawCard(method,{});
+    })
+}
+
+function appendOriginalFuncInput(elem,args){
+    elem.append('<label for="original-equation-input">Función original: </label>');
+    elem.append('<textarea class="equation-input" id="original-equation-input" name="original-equation-input" rows="1"></textarea>');
+}
+
+function appendResolveOriginalFunction(elem,args){
+    elem.append('<div class="resolve" id="resolve-original">Calcular</div>')
+    $('#resolve-original').click(function(){
+        const expr = $('#original-equation-input').val();
+        let c = plot(expr)
     })
 }
