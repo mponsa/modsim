@@ -153,7 +153,22 @@ body{
 }
 
 .card-footer{
-	width:10%;
+	width:100%;
+	display: flex;
     margin-top: 1%;
-    align-self: flex-end;
+    align-items: center;
+}
+
+#original-equation-input{
+    width: 30%;
+    height: 40;
+}
+
+#resolve-original{
+	width: 15%;
+}
+
+#clear{
+	width: 15%;
+	margin-left: 50%
 }
