@@ -1,4 +1,5 @@
 let board = "";
+let method = "";
 
 $(document).ready(function(){
     console.log("Ready!");
@@ -22,7 +23,7 @@ function cleanMethodBody(){
 }
 
 function methodClick(){
-    let method = $(this).attr('id');
+   method = $(this).attr('id');
     if(evaluateChange(method)){
         cleanMethodBody();
         //Appends the method view if changed.
@@ -40,8 +41,10 @@ function drawCard(method, args){
     elem.append(`<div class="title" id="card-title-${method}">${getCardTitle(method)}</div>`);
     elem.append(`<div class="formula-box" id="formula-box-${method}"></div>`);
     elem.append(`<div class="graph-container" id="graph-container-${method}"></div>`);
+    elem.append(`<div class="card-footer" id="card-footer-${method}"></div>`);
     appendInputs($(`#formula-box-${method}`),args);
     appendGraph($(`#graph-container-${method}`),args)
+    appendCleanButton($(`#card-footer-${method}`),args)
 }
 
 function getCardTitle(method){
@@ -56,15 +59,31 @@ function appendInputs(elem,args){
     elem.append(`<div class="container" id="equation"></div>`);
     appendEquation($('#equation'),args);
 
+    elem.append(`<div class="container" id="step"></div>`);
+    appendStep($('#step'),args);
+
+    elem.append(`<div class="container" id="start-point"></div>`);
+    appendStep($(`#start-point`,args));
+
     elem.append('<div class="container" id="button"></div>');
     appendButton($('#button'),args);
 }
 
 function appendEquation(elem,args){
-    console.log(elem)
-    elem.append('<label for="equation-input">$$ dx/dt $$</label>');
+    elem.append('<label for="equation-input">`dx/dt`</label>');
     elem.append('<textarea class="equation-input" id="equation-input" name="equation-input" rows="1"></textarea>');
 }
+
+function appendStep(elem,args){
+    elem.append('<label for="step-input">STEP:</label>');
+    elem.append('<input type="text" class="text-input" id="step-input" name="step-input">');
+}   
+
+function appendStart(elem,args){
+    console.log(elem);
+    elem.append('<label for="step-input">STEP:</label>');
+    elem.append('<input type="text" class="text-input" id="step-input" name="step-input">');
+}   
 
 function appendButton(elem,args){
     elem.append('<div class="resolve" id="resolve">Calcular</div>')
@@ -73,9 +92,70 @@ function appendButton(elem,args){
     })
 }
 
+
 function interpretFunction(){
     const expr = $('#equation-input').val();
-    let c = plot(expr)
+    odeEuler(expr,0,0,0.25,1);
+}
+
+function odeEuler(f,x0,t0,h,limit){
+    tRange = generatePointArray(t0,limit,h);
+    xRange = getZeroArray(tRange);
+
+    for(let i = 0; i < xRange.length - 1; i++){
+        //console.log(math.evaluate(f,{x:xRange[i],t:tRange[i]}));
+        xRange[i + 1] = xRange[i] + math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
+    }
+
+    pointList = getPointList(tRange,xRange);
+
+    console.log(pointList);
+
+    var g = board.create('curve',[tRange,xRange],{dash:2});
+}
+
+function odeEulerImproved(f,x0,t0,h,limit){
+    tRange = generatePointArray(t0,limit,h);
+    xRange = generatePointArray(t0,limit,h);
+
+    for(let i = 0; i < xRange.length - 1; i++){
+        //console.log(math.evaluate(f,{x:xRange[i],t:tRange[i]}));
+        xRange[i + 1] = xRange[i] + math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
+    }
+
+    pointList = getPointList(tRange,xRange);
+
+    console.log(pointList);
+
+    var g = board.create('curve',[tRange,xRange],{dash:2});
+}
+
+function generatePointArray(start,end,distanceBetweenPoints){
+    result = [];
+    for(var i = start; i <= end; i += distanceBetweenPoints){
+         result.push(i);
+     }
+    return result;
+}
+
+function getZeroArray(array){
+    result = [];
+    for(var i = 0; i < array.length; i++){
+        result.push(0);
+    }
+    return result;
+}
+
+
+
+function getPointList(xRange,tRange){
+    let result = [];
+    for(var i = 0; i < xRange.length; i++){
+        let point = [];
+        point.push(tRange[i],xRange[i]);
+        result.push(point);
+    }
+    return result;
 }
 
 function plot(func,atts){
@@ -102,4 +182,13 @@ function appendGraph(elem,args){
     };
 
     window.onresize = resize;
+}
+
+function appendCleanButton(elem,args){
+    elem.append('<div class="resolve" id="clear">Limpiar</div>')
+    $('#clear').click(function(){
+        cleanMethodBody();
+        //Appends the method view if changed.
+        drawCard(method,{});
+    })
 }

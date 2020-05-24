@@ -151,3 +151,9 @@ body{
 	position:relative;
 	top:1px;
 }
+
+.card-footer{
+	width:10%;
+    margin-top: 1%;
+    align-self: flex-end;
+}
