@@ -145,7 +145,7 @@ function odeEuler(f,x0,t0,h,limit){
 
     console.log(pointList);
 
-    var g = board.create('curve',[tRange,xRange],{dash:3,colors:['blue'],labels:['Euler']});
+    var g = board.create('curve',[tRange,xRange],{dash:3,strokeColor:'#429615'});
 }
 
 function odeEulerImproved(f,x0,t0,h,limit){
@@ -162,7 +162,7 @@ function odeEulerImproved(f,x0,t0,h,limit){
 
     console.log(pointList);
 
-    var g = board.create('curve',[tRange,xRange],{dash:2});
+    var g = board.create('curve',[tRange,xRange],{dash:2,strokeColor:'#e63030'});
 }
 
 function odeRungeKutta(f,x0,t0,h,limit){
@@ -182,7 +182,7 @@ function odeRungeKutta(f,x0,t0,h,limit){
 
     console.log(pointList);
 
-    var g = board.create('curve',[tRange,xRange],{dash:2});
+    var g = board.create('curve',[tRange,xRange],{dash:2,strokeColor:'#3480eb'});
 }
 
 function generatePointArray(start,end,distanceBetweenPoints){
