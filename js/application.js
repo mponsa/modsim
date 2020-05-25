@@ -171,11 +171,11 @@ function odeRungeKutta(f,x0,t0,h,limit){
     xRange = getZeroArray(generatePointArray(t0,limit,h));
 
     for(let i = 0; i < xRange.length - 1; i++){
-        gamma1 = math.evaluate(f,{x:xRange[i],t:tRange[i]})*h;
-        gamma2 = math.evaluate(f,{x:xRange[i]+0.5*gamma1,t:tRange[i]+0.5*h});
-        gamma3 = math.evaluate(f,{x:xRange[i]+0.5*gamma2,t:tRange[i]+0.5*h});
-        gamma4 = math.evaluate(f,{x:xRange[i]+gamma3,t:tRange[i]+ h});
-        xRange[i + 1] = xRange[i] + gamma1/6 + gamma2/3 + gamma3/3 + gamma4/6;
+        gamma1 = math.evaluate(f,{x:xRange[i],t:tRange[i]});
+        gamma2 = math.evaluate(f,{x:xRange[i]+0.5*h*gamma1,t:tRange[i]+0.5*h});
+        gamma3 = math.evaluate(f,{x:xRange[i]+0.5*h*gamma2,t:tRange[i]+0.5*h});
+        gamma4 = math.evaluate(f,{x:xRange[i]+gamma3*h,t:tRange[i]+ h});
+        xRange[i + 1] = xRange[i] + (gamma1+2*gamma2+2*gamma3+gamma4)*(h/6);
     }
 
     pointList = getPointList(tRange,xRange);
