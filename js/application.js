@@ -1,10 +1,11 @@
 let board = "";
-let method = "";
+let methods = [];
 
 $(document).ready(function(){
     console.log("Ready!");
     $('#equation-input').keyup(renderMathText);
     $('.selectable').click(methodClick);
+    drawCard();
 })
 
 function renderMathText(){
@@ -24,35 +25,30 @@ function cleanMethodBody(){
 
 function methodClick(){
    method = $(this).attr('id');
-    if(evaluateChange(method)){
-        cleanMethodBody();
-        //Appends the method view if changed.
-        drawCard(method,{});
-    }
+
+   if(methods.indexOf(method) == -1){
+      methods.push($(this).attr('id'))
+      $(this).removeClass('selectable').addClass('selectable-pressed');
+   }else{
+      methods.splice(methods.indexOf(method));
+      $(this).removeClass('selectable-pressed').addClass('selectable');
+   }
 }
 
-function drawCard(method, args){
+function drawCard(){
     //Draws a card. It maintains values from previous cards if they exist.
     elem = $('.method-body');
     elem.append('<div class="card"></div>');
 
     elem = $('.card');
 
-    elem.append(`<div class="title" id="card-title-${method}">${getCardTitle(method)}</div>`);
-    elem.append(`<div class="formula-box" id="formula-box-${method}"></div>`);
-    elem.append(`<div class="graph-container" id="graph-container-${method}"></div>`);
-    elem.append(`<div class="card-footer" id="card-footer-${method}"></div>`);
-    appendInputs($(`#formula-box-${method}`),args);
-    appendGraph($(`#graph-container-${method}`),args)
-    appendFooter($(`#card-footer-${method}`))
-}
-
-function getCardTitle(method){
-    switch(method){
-        case "euler": return "Euler";
-        case "enhanced-euler": return "Euler mejorado";
-        case "runge-kutta": return "Runge Kutta";
-    }
+    elem.append(`<div class="title" id="card-title">Aproximación númerica de ecuaciones diferenciales</div>`);
+    elem.append(`<div class="formula-box" id="formula-box"></div>`);
+    elem.append(`<div class="graph-container" id="graph-container"></div>`);
+    elem.append(`<div class="card-footer" id="card-footer"></div>`);
+    appendInputs($(`#formula-box`));
+    appendGraph($(`#graph-container`))
+    appendFooter($(`#card-footer`))
 }
 
 function appendInputs(elem,args){
@@ -62,8 +58,8 @@ function appendInputs(elem,args){
     elem.append(`<div class="container" id="step"></div>`);
     appendStep($('#step'),args);
 
-    elem.append(`<div class="container" id="start-point"></div>`);
-    appendStep($(`#start-point`,args));
+    elem.append(`<div class="container" id="range-point"></div>`);
+    appendRange($('#range-point'),args);
 
     elem.append('<div class="container" id="button"></div>');
     appendButton($('#button'),args);
@@ -79,11 +75,22 @@ function appendStep(elem,args){
     elem.append('<input type="text" class="text-input" id="step-input" name="step-input">');
 }   
 
-function appendStart(elem,args){
-    console.log(elem);
-    elem.append('<label for="step-input">STEP:</label>');
-    elem.append('<input type="text" class="text-input" id="step-input" name="step-input">');
-}   
+function appendRange(elem,args){
+    elem.append('<label class="time-range-label" for="">Time Range: </label>');
+    elem.append('<div class="range-container" id="range-container"></div>');
+    appendRangeInputs($('#range-container'),args)
+}
+
+function appendRangeInputs(elem,args){
+    elem.append('<div class="range-values" id="range-values"></div>');
+    appendRangeValues($('#range-values'));
+    elem.append('<input id="time-range" type="range" min="0" value="1" max="10">')
+}
+
+function appendRangeValues(elem,args){
+    elem.append('<div class="zero-value"> 0 </div>');
+    elem.append('<div class="max-value"> 10 </div>');
+}
 
 function appendButton(elem,args){
     elem.append('<div class="resolve" id="resolve">Calcular</div>')
@@ -95,14 +102,33 @@ function appendButton(elem,args){
 
 function interpretFunction(){
     const expr = $('#equation-input').val();
-    const step = $('#step').val();
-    console.log(step);
-    switch(method){
-        case "euler": return odeEuler(expr,0,0,0.25,1);;
-        case "enhanced-euler": return odeEulerImproved(expr,0,0,0.25,1);
-        case "runge-kutta": return odeRungeKutta(expr,0,0,0.25,1);
+    if(expr == ''){
+        alert("No has insertado una ecuación diferencial!");
     }
-    
+    let step = parseFloat($('#step-input').val());
+    if(step == ''){
+        alert("No has definido un valor de step, se utilizara 0.25 por defecto.")
+        step = 0.25
+    }
+    console.log(step);
+    if(methods.length == 0){
+        alert("No has seleccionado métodos para graficar!");
+    }
+    const limit = parseInt($('#time-range').val());
+    console.log(limit);
+    methods.forEach(method => {
+        switch(method){
+            case "euler": 
+                odeEuler(expr,0,0,step,limit);
+                break;
+            case "enhanced-euler": 
+                odeEulerImproved(expr,0,0,step,limit);
+                break;
+            case "runge-kutta": 
+                odeRungeKutta(expr,0,0,step,limit);
+                break;
+        }
+    })
 }
 
 function odeEuler(f,x0,t0,h,limit){
@@ -119,7 +145,7 @@ function odeEuler(f,x0,t0,h,limit){
 
     console.log(pointList);
 
-    var g = board.create('curve',[tRange,xRange],{dash:2});
+    var g = board.create('curve',[tRange,xRange],{dash:3,colors:['blue'],labels:['Euler']});
 }
 
 function odeEulerImproved(f,x0,t0,h,limit){
@@ -224,7 +250,7 @@ function appendCleanButton(elem,args){
     $('#clear').click(function(){
         cleanMethodBody();
         //Appends the method view if changed.
-        drawCard(method,{});
+        drawCard();
     })
 }
 
