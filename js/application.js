@@ -67,7 +67,7 @@ function appendInputs(elem,args){
 
 function appendEquation(elem,args){
     elem.append('<label for="equation-input">`dx/dt`</label>');
-    elem.append('<textarea class="equation-input" id="equation-input" name="equation-input" rows="1"></textarea>');
+    elem.append('<textarea class="equation-input" id="equation-input" name="equation-input" rows="1">2t</textarea>');
 }
 
 function appendStep(elem,args){
