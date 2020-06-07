@@ -72,7 +72,7 @@ function appendEquation(elem,args){
 
 function appendStep(elem,args){
     elem.append('<label for="step-input">STEP:</label>');
-    elem.append('<input type="text" class="text-input" id="step-input" name="step-input">');
+    elem.append('<input type="text" class="text-input" id="step-input" name="step-input" value="0.1">');
 }   
 
 function appendRange(elem,args){
