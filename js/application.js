@@ -99,7 +99,7 @@ function appendRangeInputs(elem, args) {
 
 function appendRangeValues(elem, args) {
   elem.append('<div class="zero-value"> 0 </div>');
-  elem.append('<div class="max-value"> 10 </div>');
+  elem.append('<div class="max-value"> 20 </div>');
 }
 
 function appendButton(elem, args) {
