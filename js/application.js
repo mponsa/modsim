@@ -75,14 +75,16 @@ function appendEquation(elem, args) {
 }
 
 function appendStep(elem, args) {
-  elem.append('<label for="step-input">STEP:</label>');
+  elem.append('<label for="step-input">Pasos:</label>');
   elem.append(
     '<input type="text" class="text-input" id="step-input" name="step-input" value="0.1">'
   );
 }
 
 function appendRange(elem, args) {
-  elem.append('<label class="time-range-label" for="">Time Range: </label>');
+  elem.append(
+    '<label class="time-range-label" for="">Rango de tiempo: </label>'
+  );
   elem.append('<div class="range-container" id="range-container"></div>');
   appendRangeInputs($("#range-container"), args);
 }
@@ -91,7 +93,7 @@ function appendRangeInputs(elem, args) {
   elem.append('<div class="range-values" id="range-values"></div>');
   appendRangeValues($("#range-values"));
   elem.append(
-    '<input id="time-range" type="range" min="0" value="1" max="10">'
+    '<input id="time-range" type="range" min="0" value="10" max="20">'
   );
 }
 
@@ -248,6 +250,7 @@ function plot(func, atts) {
 }
 
 function addCurve(board, func, atts) {
+  console.log(func);
   var f = board.create("functiongraph", [func], atts);
   return f;
 }
@@ -298,7 +301,12 @@ function appendOriginalFuncInput(elem, args) {
 function appendResolveOriginalFunction(elem, args) {
   elem.append('<div class="resolve" id="resolve-original">Calcular</div>');
   $("#resolve-original").click(function () {
-    const expr = $("#original-equation-input").val();
+    const expr = $("#original-equation-input").val().replace(/t/gi, "x");
+
+    if (expr == "") {
+      alert("No has insertado una ecuación!");
+    }
+
     let c = plot(expr, {
       strokeColor: "#000",
     });
