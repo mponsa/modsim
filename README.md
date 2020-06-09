@@ -11,3 +11,4 @@ La aplicación es una plataforma web, desarrollada en javascript. El código fue
 A si mismo la aplicación se encuentra disponible públicamente en https://mponsa.github.io/modsim/
 
 
+https://docs.google.com/document/d/19E1byf-MIxwYH_71-ZNq70EtCxSzBz4MdZ1zNMmICRQ/edit#
